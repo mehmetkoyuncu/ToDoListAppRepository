@@ -1,0 +1,24 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To Do List</title>
+    <partial name="~/Views/Partials/Libs/_CSSPartial.cshtml">
+        
+</head>
+<body>
+    <header class="mt-5">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        </nav>
+    </header>
+    <div id="content" class="container">
+        @RenderBody()
+    </div>
+
+    <footer class="border-top footer text-muted mt-5">
+    </footer>
+
+    <partial name="~/Views/Partials/Libs/_JSPartial.cshtml">
+</body>
+</html>

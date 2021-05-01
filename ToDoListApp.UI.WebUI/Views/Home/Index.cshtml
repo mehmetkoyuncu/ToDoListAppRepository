@@ -1,0 +1,139 @@
+﻿@{ Layout = "_Layout"; }
+<div class="row mt-5">
+    <div class="col-md-12 text-center">
+        <img src="~/lib/images/todoimg.png" width="15%" />
+    </div>
+    <div class="col-md-12" id="table_division mt-3">
+        <div class="col-md-12 text-right" id="add_task_division">
+            <button type="button" class="btn btn-success mb-3" data-toggle="modal" data-target="#add_task_modal">
+                <i class="fas fa-plus-square"></i> Add Task
+            </button>
+        </div>
+        <table id="table_todo" class="table table-hovered table-striped table-bordered table-responsive text-center">
+            <thead>
+                <tr>
+                    <th width="20%">Task Title</th>
+                    <th>Task Date</th>
+                    <th>Created At</th>
+                    <th>Updated At</th>
+                    <th width="20%">Events</th>
+                    <th width="20%">Complete</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+        </table>
+    </div>
+</div>
+
+<div class="modal modal-center fade" id="add_task_modal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success">
+                <h5 class="modal-title text-light"> <i class="fas fa-plus-square mr-1"></i>Add Task</h5>
+                <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="title" class="mb-1">Title :</label>
+                                <input type="text" class="form-control" id="add_task_tittle" placeholder="Task Tittle..">
+                            </div>
+                            <div class="form-group">
+                                <div class="form-group">
+                                    <label for="description" class="mb-1">Content :</label>
+                                    <textarea class="form-control" rows="5" id="add_task_description" placeholder="Task Content.."></textarea>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="example-datetime-local-input" class="col-12 col-form-label">Date and time</label>
+                                <div class="col-12">
+                                    <input style="display:block;" class="form-control" type="datetime-local" value="@DateTime.Now" id="date-time-add">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-success text-light" onclick="AddTask()">Save</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal modal-center fade" id="update_task_modal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-warning">
+                <h5 class="modal-title text-light"> <i class='fas fa-pen-square mr-1'></i>Update Task</h5>
+                <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group">
+                                <label for="title" class="mb-1">Title :</label>
+                                <input type="text" class="form-control" id="update_task_tittle" placeholder="Task Tittle..">
+                            </div>
+                            <div class="form-group">
+                                <label for="description" class="mb-1">Content :</label>
+                                <textarea class="form-control" rows="5" id="update_task_description" placeholder="Task Content.."></textarea>
+                            </div>
+                            <div class="form-group row">
+                                <label for="example-datetime-local-input" class="col-12 col-form-label">Date and time</label>
+                                <div class="col-12">
+                                    <input style="display:block;" class="form-control" type="datetime-local" value="@DateTime.Now.ToString() " id="date-time-update">
+                                </div>
+                            </div>
+                            <input type="hidden" id="update_id" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-warning text-light" onclick="UpdateTask()">Save</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal modal-center fade" id="ViewTaskModal">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-info">
+                <h5 class="modal-title text-light"> <i class='fas fa-pen-square mr-1'></i>View Task</h5>
+                <button type="button" class="close text-light" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="container">
+                    <div class="row mb-1">
+                        <div class="col-md-12">
+                            <h1><b><span id="view_task_title"></span></b></h1>
+                            <hr />
+                        </div>
+                       
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12" style="width:100px">
+                            <span id="view_task_description"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
