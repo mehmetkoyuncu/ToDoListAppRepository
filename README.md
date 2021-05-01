@@ -17,7 +17,7 @@ https://github.com/mehmetkoyuncu/ToDoListAppRepository
 ## Start
 
 
-After making sure that all api and mvc application are selected on visual studio, the application can be started by writing the connectionstring of your database in the context classes within the apiler.
+After making sure that all api and mvc application are selected on visual studio, the application can be started by writing the connectionstring of your database in the context classes within the apiler. If it doesn't start in the first, restart it.
 
 
 
