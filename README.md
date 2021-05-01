@@ -1,4 +1,4 @@
-# Phone Book App
+# To Do List  App
 
 It is a to do list application made using .Net Core. 
 
