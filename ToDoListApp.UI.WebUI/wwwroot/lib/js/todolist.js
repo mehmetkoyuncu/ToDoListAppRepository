@@ -23,10 +23,10 @@ $(document).ready(function () {
                     return "<a  class='btn btn-info text-light mr-2' onclick=ViewTask('" + row.id + "')><i class='fas fa-eye'></i></a>" +
                         "<a href='#' class='btn btn-warning text-light mr-2' onclick=UpdateSendTask('" + row.id + "'); ><i class='fas fa-pen-square mr-1'></i></a>" +
                         "<a class='btn btn-danger text-light' onclick=DeleteTask('" + row.id + "') > <i class=\"fas fa-trash-alt mr-1\"></i></a>";
-                       
+
                 }
             },
-           
+
             {
                 "render": function (data, type, row) {
 
@@ -50,11 +50,25 @@ $(document).ready(function () {
 
                 }
             },
+            {
+                "render": function (data, type, row) {
+                    if (row.isDone == false && row.isRemind == false) {
+                        return "<a href='#' class='btn btn-danger complete' onclick=Remind('" + row.id + "-" + row.taskDate + "'); > <i class='fas fa-th-list mr-1'></i>Reminder</a >"
+                        
+                    }
+                    else {
+                        return "<button h class='btn btn-secondary complete' disabled > <i class='fas fa-th-list mr-1'></i>Reminder</button >"
+                    }
+
+                }
+            }
            
         ]
 
     });
-    debugger;
+        setInterval(function () {
+            RemindControl();
+        }, 1000);
 });
 function ViewTask(id) {
     var Id = Number(id);
@@ -78,6 +92,8 @@ function ViewTask(id) {
    
        
 }
+var dateList = [];
+var ReadyList=[];
 function GetList() {
     var _data;
     $.ajax({
@@ -88,6 +104,33 @@ function GetList() {
         contentType: "application/json; charset=utf-8",
         success: function (data) {
             _data = data;
+            _data.forEach(dateLoop);
+            debugger;
+            function dateLoop(item) {
+                if (item.isRemind == true && item.isDone == false) {
+                    var now = new Date();
+                    now.setMilliseconds(0);
+                    now.setSeconds(0);
+                    var nw = now.getTime();
+                    var taskDate = new Date(Date.parse(item.taskDate));
+                    taskDate.setSeconds(0);
+                    taskDate.setMilliseconds(0);
+                    if (taskDate.getTime() < nw) {
+                        var obj = { id: item.id, date: item.taskDate };
+                        dateList.push(obj);
+                        debugger;
+                    }
+                    else {
+                        var obj = { date: item.taskDate, title: item.taskTitle };
+                        ReadyList.push(obj);
+                        debugger;
+                    }
+                    debugger;
+                }
+            }
+            debugger;
+
+
         },
         fail:{
     }
@@ -274,4 +317,56 @@ function Complete(id) {
         }
     });
 
+}
+function Remind(info) {
+    var data = info;
+    var index = info.indexOf('-');
+    var date = data.substr(index + 1);
+    var id = data.substr(0, index);
+    var elementDate = new Date(Date.parse(date));
+    var obj = {
+        date: elementDate,
+        id:id
+    }
+    dateList.push(obj);
+    var id = Number(obj.id);
+    $.ajax({
+        type: "POST",
+        url: "https://localhost:44307/api/Task/RemindTask",
+        datatype: "json",
+        contentType: "application/json; charset=utf-8",
+        data: JSON.stringify({ 'Id': id }),
+        success: function (data) {
+            if (data == true) {
+                swal({
+                    title: "Reminder Created Successfully",
+                    icon: "success",
+                    button: "Ok",
+                });
+
+                LoadTb();
+            }
+            else {
+                swal({
+                    title: "Remainder Created Failed..",
+                    text: "Please Try again..",
+                    icon: "error",
+                    button: "Ok",
+                });
+            }
+        }
+    });
+    LoadTb();
+}
+function RemindControl() {
+    var now = new Date();
+    now.setMilliseconds(0);
+    var nw = now.getTime();
+    dateList.forEach(control);
+    function control(item, index) {
+        item.date.setMilliseconds(0);
+        if (item.date.getTime() == nw) {
+            
+        }
+    }  
 }

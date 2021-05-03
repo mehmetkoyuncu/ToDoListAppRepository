@@ -77,5 +77,12 @@ namespace ToDoListApp.Service.WebAPI.Core.Concrete
             task.UpdatedAt = DateTime.Now;
             return _repo.Update(task);
         }
+        public bool RemindTask(int id)
+        {
+            MyTask task = _repo.GetSingle(x => x.Id == id);
+            task.IsRemind = true;
+            task.UpdatedAt = DateTime.Now;
+            return _repo.Update(task);
+        }
     }
 }

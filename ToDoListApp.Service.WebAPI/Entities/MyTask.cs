@@ -16,6 +16,7 @@ namespace ToDoListApp.Service.WebAPI.Entities
         public string TaskContent { get; set; }
         public bool IsDone { get; set; }
         public bool IsDelete { get; set; }
+        public bool IsRemind { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime UpdatedAt { get; set; }
         public DateTime TaskDate { get; set; }

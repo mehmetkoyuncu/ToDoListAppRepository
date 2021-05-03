@@ -14,5 +14,6 @@ namespace ToDoListApp.Service.WebAPI.Core.Abstract
         List<MyTask> GetList();
         MyTask GetSingle(int id);
         bool CompleteTask(int id);
+        bool RemindTask(int id);
     }
 }
