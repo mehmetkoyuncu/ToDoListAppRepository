@@ -42,7 +42,6 @@ namespace ToDoListApp.Service.WebAPI.Data.Repository.Concrete
         {
             return _dbSet.FirstOrDefault(filter);
         }
-
         public bool Remove(TEntity entity)
         {
             bool condition = false;

@@ -378,7 +378,45 @@ function RemindControl() {
     function control(item, index) {
         item.date.setMilliseconds(0);
         if (item.date.getTime() == nw) {
-            
+            $.ajax({
+                type: "POST",
+                url: "https://localhost:44307/api/Task/GetTask",
+                datatype: "json",
+                contentType: "application/json; charset=utf-8",
+                data: JSON.stringify({ 'Id': Id, }),
+                success: function (data) {
+                    _data = data;
+                    _data.forEach(dateLoop);
+                    debugger;
+                    function dateLoop(item) {
+                        if (item.isRemind == true && item.isDone == false) {
+                            var now = new Date();
+                            now.setMilliseconds(0);
+                            now.setSeconds(0);
+                            var nw = now.getTime();
+                            var taskDate = new Date(Date.parse(item.taskDate));
+                            taskDate.setSeconds(0);
+                            taskDate.setMilliseconds(0);
+                            if (taskDate.getTime() < nw) {
+                                var obj = { date: item.taskDateString, title: item.taskTitle };
+                                ReadyList.push(obj);
+                                debugger;
+                                return ReadyList;
+                            }
+                            else {
+                                var obj = { id: item.id, date: item.taskDate };
+                                dateList.push(obj);
+                                debugger;
+                            }
+                            debugger;
+                        }
+                    }
+                    debugger;
+                    ShowRemindAlerts(ReadyList);
+
+
+                },
+            });
         }
     }  
 }
