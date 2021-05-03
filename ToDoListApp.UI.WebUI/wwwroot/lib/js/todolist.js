@@ -93,7 +93,7 @@ function ViewTask(id) {
        
 }
 var dateList = [];
-var ReadyList=[];
+
 function GetList() {
     var _data;
     $.ajax({
@@ -103,6 +103,7 @@ function GetList() {
         async:false,
         contentType: "application/json; charset=utf-8",
         success: function (data) {
+            var ReadyList = [];
             _data = data;
             _data.forEach(dateLoop);
             debugger;
@@ -116,19 +117,21 @@ function GetList() {
                     taskDate.setSeconds(0);
                     taskDate.setMilliseconds(0);
                     if (taskDate.getTime() < nw) {
-                        var obj = { id: item.id, date: item.taskDate };
-                        dateList.push(obj);
+                        var obj = { date: item.taskDateString, title: item.taskTitle };
+                        ReadyList.push(obj);
                         debugger;
+                        return ReadyList;
                     }
                     else {
-                        var obj = { date: item.taskDate, title: item.taskTitle };
-                        ReadyList.push(obj);
+                        var obj = { id: item.id, date: item.taskDate };
+                        dateList.push(obj);
                         debugger;
                     }
                     debugger;
                 }
             }
             debugger;
+            ShowRemindAlerts(ReadyList);
 
 
         },
@@ -136,6 +139,15 @@ function GetList() {
     }
     });
     return _data
+}
+function ShowRemindAlerts(readyList) {
+    debugger;
+    $('#alerts').html("");
+    readyList.forEach(AlertItem);
+    function AlertItem(item) {
+        debugger;
+            $('#alerts').append("<div class='alert alert-danger'><a class='close' data-dismiss='alert'>×</a>" + "The task named <b class='bolder'>" + item.title + "</b>, should be completed on <b class='bolder'>" + item.date + "</b>, has not been completed.Please complete the task.." + "</div>");
+    }
 }
 function LoadTb() {
     $('#table_todo').dataTable().fnClearTable();

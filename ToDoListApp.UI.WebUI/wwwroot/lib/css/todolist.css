@@ -60,3 +60,9 @@ td{
 #table_todo_filter {
     margin-bottom: 20px !important;
 }
+.bolder{
+    font-weight:bolder !important;
+}
+.close:hover{
+    cursor:pointer;
+}
