@@ -53,7 +53,16 @@ $(document).ready(function () {
             {
                 "render": function (data, type, row) {
                     if (row.isDone == false && row.isRemind == false) {
-                        return "<a href='#' class='btn btn-danger complete' onclick=Remind('" + row.id + "-" + row.taskDate + "'); > <i class='fas fa-th-list mr-1'></i>Reminder</a >"
+                        var taskTArray = row.taskTitle.split(' ');
+                        taskTArray.forEach(loop);
+                        var result;
+                        function loop(item, index) {
+                            if (index != 0)
+                                result += "&npsb" + item;
+                            else
+                                result = item;
+                        }
+                        return "<a href='#' class='btn btn-danger complete' onclick=Remind('" + row.id + "-" + row.taskDate + "!" + result + "'); > <i class='fas fa-th-list mr-1'></i>Reminder</a >"
                         
                     }
                     else {
@@ -66,9 +75,9 @@ $(document).ready(function () {
         ]
 
     });
-        setInterval(function () {
-            RemindControl();
-        }, 1000);
+        //setInterval(function () {
+        //    RemindControl();
+        //}, 1000);
 });
 function ViewTask(id) {
     var Id = Number(id);
@@ -120,12 +129,11 @@ function GetList() {
                         var obj = { date: item.taskDateString, title: item.taskTitle };
                         ReadyList.push(obj);
                         debugger;
-                        return ReadyList;
+                        LoadRemindAlert(ReadyList);
                     }
                     else {
-                        var obj = { id: item.id, date: item.taskDate };
+                        var obj = { title: item.taskTitle, date: item.taskDate };
                         dateList.push(obj);
-                        debugger;
                     }
                     debugger;
                 }
@@ -142,12 +150,19 @@ function GetList() {
 }
 function ShowRemindAlerts(readyList) {
     debugger;
-    $('#alerts').html("");
-    readyList.forEach(AlertItem);
-    function AlertItem(item) {
-        debugger;
+    if (Array.isArray(readyList)) {
+        $('#alerts').html("");
+        readyList.forEach(AlertItem);
+        function AlertItem(item) {
+            debugger;
             $('#alerts').append("<div class='alert alert-danger'><a class='close' data-dismiss='alert'>×</a>" + "The task named <b class='bolder'>" + item.title + "</b>, should be completed on <b class='bolder'>" + item.date + "</b>, has not been completed.Please complete the task.." + "</div>");
+        }
     }
+    else {
+        $('#alerts').append("<div class='alert alert-danger'><a class='close' data-dismiss='alert'>×</a>" + "The task named <b class='bolder'>" + readyList.title + "</b>, should be completed on <b class='bolder'>" + readyList.date + "</b>, has not been completed.Please complete the task.." + "</div>");
+    }
+
+   
 }
 function LoadTb() {
     $('#table_todo').dataTable().fnClearTable();
@@ -331,17 +346,29 @@ function Complete(id) {
 
 }
 function Remind(info) {
+    debugger;
     var data = info;
-    var index = info.indexOf('-');
-    var date = data.substr(index + 1);
-    var id = data.substr(0, index);
+    var firstInd = info.indexOf('-');
+    var lastInd = info.indexOf('!');
+    var disticntion = lastInd - firstInd;
+    var date = data.substr(firstInd + 1, disticntion - 1);
+    var title = info.substr(lastInd + 1);
+    var array = title.split('&npsb');
+    debugger;
+    titleResult = array.join(' ');
+    debugger;
+    var idDist = firstInd - 0;
+    debugger;
+    var id = data.substr(0, idDist);
+    debugger;
     var elementDate = new Date(Date.parse(date));
     var obj = {
         date: elementDate,
-        id:id
+        title: title
     }
     dateList.push(obj);
-    var id = Number(obj.id);
+    var id = Number(id);
+    debugger;
     $.ajax({
         type: "POST",
         url: "https://localhost:44307/api/Task/RemindTask",
@@ -370,53 +397,21 @@ function Remind(info) {
     });
     LoadTb();
 }
+function LoadRemindAlert(obj) {
+    ShowRemindAlerts(obj);
+}
 function RemindControl() {
     var now = new Date();
     now.setMilliseconds(0);
     var nw = now.getTime();
     dateList.forEach(control);
+    debugger;
     function control(item, index) {
-        item.date.setMilliseconds(0);
-        if (item.date.getTime() == nw) {
-            $.ajax({
-                type: "POST",
-                url: "https://localhost:44307/api/Task/GetTask",
-                datatype: "json",
-                contentType: "application/json; charset=utf-8",
-                data: JSON.stringify({ 'Id': Id, }),
-                success: function (data) {
-                    _data = data;
-                    _data.forEach(dateLoop);
-                    debugger;
-                    function dateLoop(item) {
-                        if (item.isRemind == true && item.isDone == false) {
-                            var now = new Date();
-                            now.setMilliseconds(0);
-                            now.setSeconds(0);
-                            var nw = now.getTime();
-                            var taskDate = new Date(Date.parse(item.taskDate));
-                            taskDate.setSeconds(0);
-                            taskDate.setMilliseconds(0);
-                            if (taskDate.getTime() < nw) {
-                                var obj = { date: item.taskDateString, title: item.taskTitle };
-                                ReadyList.push(obj);
-                                debugger;
-                                return ReadyList;
-                            }
-                            else {
-                                var obj = { id: item.id, date: item.taskDate };
-                                dateList.push(obj);
-                                debugger;
-                            }
-                            debugger;
-                        }
-                    }
-                    debugger;
-                    ShowRemindAlerts(ReadyList);
-
-
-                },
-            });
+        var itemDate = new Date(item.date);
+        itemDate.setMilliseconds(0);
+        if (itemDate.getTime() == nw) {
+            ShowRemindAlerts(item);
+            debugger;
         }
     }  
 }
