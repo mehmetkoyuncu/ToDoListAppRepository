@@ -1,9 +1,7 @@
 ﻿
 
 $(document).ready(function () {
-    debugger;
     var _data = GetList();
-    debugger;
     var tb = $("#table_todo").DataTable({
         destroy: true,
         retrieve: true,
@@ -17,16 +15,13 @@ $(document).ready(function () {
             { data: "taskDateString", "autoWidth": true },
             { data: "createdString", "autoWidth": true },
             { data: "updateString", "autowidth": true, },
-
             {
                 "render": function (data, type, row) {
                     return "<a  class='btn btn-info text-light mr-2' onclick=ViewTask('" + row.id + "')><i class='fas fa-eye'></i></a>" +
                         "<a href='#' class='btn btn-warning text-light mr-2' onclick=UpdateSendTask('" + row.id + "'); ><i class='fas fa-pen-square mr-1'></i></a>" +
                         "<a class='btn btn-danger text-light' onclick=DeleteTask('" + row.id + "') > <i class=\"fas fa-trash-alt mr-1\"></i></a>";
-
                 }
             },
-
             {
                 "render": function (data, type, row) {
 
@@ -36,7 +31,6 @@ $(document).ready(function () {
                     else {
                         return "<a href='#' class='btn btn-success complete'   onclick=Complete('" + row.id + "'); ><i class='fas fa-th-list mr-1'></i>Complete</a>";
                     }
-
                 }
             },
             {
@@ -47,38 +41,40 @@ $(document).ready(function () {
                     else {
                         return "<span class='badge badge-danger complete'><i class='fas fa-times mr-1'></i>Not Complete</span>"
                     }
-
                 }
             },
-           
         ]
-
     });
-
    setInterval(function () {
             ControlDateTime();
         }, 1000);
-    
 });
 var list = [];
 function ControlDateTime() {
     var now = new Date();
     now.setMilliseconds(0);
+    var five = new Date(300000);
+    var three = new Date(180000);
+    var one = new Date(60000);
     list.forEach(Looper);
     function Looper(item) {
+        var itemDate = new Date(Date.parse(item.taskDate));
+        itemDate.setMilliseconds(0);
         if (item.isDone == false) {
-            var itemDate = new Date(Date.parse(item.taskDate));
-            itemDate.setMilliseconds(0);
-            if ((itemDate.getTime()) - (now.getTime()) === 300000) {
-                ShowAlert(item);
-            }
+            if ((itemDate.getTime()) - (now.getTime()) === five.getTime()) 
+                ShowAlert(item, five.getMinutes(),"success");
+            else if ((itemDate.getTime()) - (now.getTime()) === three.getTime()) 
+                ShowAlert(item, three.getMinutes(),"success");
+            else if ((itemDate.getTime()) - (now.getTime()) === one.getTime()) 
+                ShowAlert(item, one.getMinutes(),"success");
+            else if ((itemDate.getTime()) === (now.getTime())) 
+                ShowAlert(item, one.getMinutes(), "danger");
+                
         }
-       
     }
 }
 function ViewTask(id) {
     var Id = Number(id);
-    debugger;
     $.ajax({
         type: "POST",
         url: "https://localhost:44307/api/Task/GetTask",
@@ -86,23 +82,22 @@ function ViewTask(id) {
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify({ "Id": Id }),
         success: function (data) {
-            debugger;
             $('#view_task_title').text(data.taskTitle);
             $('#view_task_description').text(data.taskContent);
             $('#ViewTaskModal').modal('show');
-            
-            debugger;
         },
-        fail: {
-            ////////Bakkkkk////
+        error: function () {
+            swal({
+                title: "Something Wrent Wrong.",
+                text: "Please Try Again Later..",
+                icon: "error",
+                button: "Ok",
+            });
         }
     });
-   
-       
 }
 function GetList() {
     var _data;
-    debugger;
     $.ajax({
         type: "GET",
         url: "https://localhost:44307/api/Task/GetAllTask",
@@ -110,29 +105,28 @@ function GetList() {
         async:false,
         contentType: "application/json; charset=utf-8",
         success: function (data) {
-            debugger;
             _data = data;
+            list = [];
             _data.forEach(AddList);
             function AddList(item) {
                 list.push(item);
             }
-            debugger;
         },
-        fail:{
-    }
+
     });
     return _data
 }
-function ShowAlert(item) {
-    debugger;
-    $('#alerts').append("<div class='alert alert-danger'><a class='close' data-dismiss='alert'>×</a> There is 5 minutes left for the task named <span class='bolder'>" + item.taskTitle + "</span> which needs to be completed on <span class='bolder'>" + item.taskDateString+ "</span></div>")
+function ShowAlert(item, minute, alertType) {
+    if (alertType == "success") 
+        $('#alerts').append("<div class='alert alert-" + alertType + "'><a class='close' data-dismiss='alert'>×</a> There is <span class='bolder'>" + minute.toString() + "</span> minutes left for the task named <span class='bolder'>" + item.taskTitle + "</span> which needs to be completed on <span class='bolder'>" + item.taskDateString + "</span></div>");
+    else
+        $('#alerts').append("<div class='alert alert-" + alertType + "'><a class='close' data-dismiss='alert'>×</a> There is <span class='bolder'> </span> minutes left for the task named <span class='bolder'>" + item.taskTitle + "</span> which needs to be completed on <span class='bolder'>" + item.taskDateString + "</span></div>");
 }
 function LoadTb() {
     $('#table_todo').dataTable().fnClearTable();
     var _data = GetList();
     if (_data.length != 0) {
         $("#table_todo").dataTable().fnAddData(_data);
-
     }
 }
 function DeleteTask(id) {
@@ -146,7 +140,6 @@ function DeleteTask(id) {
     })
         .then((willDelete) => {
             if (willDelete) {
-                debugger;
                 $.ajax({
                     type: "DELETE",
                     url: "https://localhost:44307/api/Task/RemoveTask",
@@ -173,6 +166,14 @@ function DeleteTask(id) {
                                 button: "Ok",
                             });
                         }
+                    },
+                    error: function () {
+                        swal({
+                            title: "Something Wrent Wrong.",
+                            text: "Please Try Again Later..",
+                            icon: "error",
+                            button: "Ok",
+                        });
                     }
                 });
             }
@@ -182,7 +183,6 @@ function AddTask() {
     var Title = $('#add_task_tittle').val();
     var Description = $('#add_task_description').val();
     var date = $('#date-time-add').val();
-    debugger;
     $.ajax({
         type: "POST",
         url: "https://localhost:44307/api/Task/AddTask",
@@ -196,7 +196,6 @@ function AddTask() {
                     icon: "success",
                     button: "Ok",
                 });
-
                 LoadTb();
             }
             else {
@@ -207,14 +206,24 @@ function AddTask() {
                     button: "Ok",
                 });
             }
+        },
+        error: function () {
+            swal({
+                title: "Something Wrent Wrong.",
+                text: "Please Try Again Later..",
+                icon: "error",
+                button: "Ok",
+            });
         }
     });
-    
     $("#add_task_modal .close").click();
+    $('#add_task_tittle').val("");
+    $('#add_task_description').val("");
+    $('#date-time-add').val("");
+
 
 }
 function UpdateSendTask(id) {
-    debugger;
     var Id = Number(id);
     $.ajax({
         type: "POST",
@@ -223,30 +232,39 @@ function UpdateSendTask(id) {
         contentType: "application/json; charset=utf-8",
         data: JSON.stringify({ 'Id': Id}),
         success: function (data) {
-            debugger;
             $('#update_id').val(id);
             $('#update_task_tittle').val(data.taskTitle);
             $('#update_task_description').val(data.taskContent);
-            var test =data.taskDate;
-            $('#date-time-update').val(test);
-            $('#update_task_modal').modal('show');
+            var date = data.taskDate;
+            var dateResult;
+            if (date.includes('.')) {
+                var index = date.indexOf('.');
+                dateResult = date.substring(0, index);
+            }
+            else {
+                dateResult = date;
+            }
             debugger;
+            $('#date-time-update').val(dateResult);
+            $('#update_task_modal').modal('show');
         },
-        fail: {
-            ////////////////////////Tamamla///////////////////////////////
+        error: function () {
+            swal({
+                title: "Something Wrent Wrong.",
+                text: "Please Try Again Later..",
+                icon: "error",
+                button: "Ok",
+            });
         }
     });
     
 }
-function UpdateTask() {
-        
+function UpdateTask() {  
     var id = $('#update_id').val();
     var Id = Number(id);
     var Title = $('#update_task_tittle').val();
     var Description = $('#update_task_description').val();
     var date = $('#date-time-update').val();
-    debugger;
-    debugger;
     $.ajax({
         type: "POST",
         url: "https://localhost:44307/api/Task/UpdateTask",
@@ -272,6 +290,14 @@ function UpdateTask() {
                     button: "Ok",
                 });
             }
+        },
+        error: function () {
+            swal({
+                title: "Something Wrent Wrong.",
+                text: "Please Try Again Later..",
+                icon: "error",
+                button: "Ok",
+            });
         }
     });
     $("#update_task_modal .close").click()
@@ -293,7 +319,6 @@ function Complete(id) {
                     icon: "success",
                     button: "Ok",
                 });
-
                 LoadTb();
             }
             else {
@@ -304,7 +329,14 @@ function Complete(id) {
                     button: "Ok",
                 });
             }
+        },
+        error: function () {
+            swal({
+                title: "Something Wrent Wrong.",
+                text: "Please Try Again Later..",
+                icon: "error",
+                button: "Ok",
+            });
         }
     });
-
 }
