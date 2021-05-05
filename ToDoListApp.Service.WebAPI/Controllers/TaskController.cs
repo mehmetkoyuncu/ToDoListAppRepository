@@ -47,11 +47,8 @@ namespace ToDoListApp.Service.WebAPI.Controllers
         {
             return Ok(_service.CompleteTask(task.Id));
         }
-        [HttpPost]
-        public IActionResult RemindTask(MyTask task)
-        {
-            return Ok(_service.RemindTask(task.Id));
-        }
+        
+   
 
     }
 }

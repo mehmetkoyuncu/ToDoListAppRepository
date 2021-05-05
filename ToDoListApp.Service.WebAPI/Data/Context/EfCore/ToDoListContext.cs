@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,12 +14,14 @@ namespace ToDoListApp.Service.WebAPI.Data.Context.EfCore
         public DbSet<MyTask> MyTasks { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Data Source=.;Initial Catalog=ToDoListAppDB;Integrated Security=True;");
+            optionsBuilder.UseNpgsql("Server=localhost;Port=5432;Database=ToDoListDB;Integrated Security=true; User Id=postgres;Password=7973153.mK;");
         }
+        Dummy datas = new Dummy();
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            Dummy data = new Dummy();
-            modelBuilder.Entity<MyTask>().HasData(data.Tasks);
+            modelBuilder.Entity<MyTask>().ToTable("Tasks", "public");
+            modelBuilder.Entity<MyTask>().HasData(datas.Tasks);
+           
         }
     }
 }
