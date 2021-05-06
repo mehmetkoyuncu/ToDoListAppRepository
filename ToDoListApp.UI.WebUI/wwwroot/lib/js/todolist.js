@@ -118,9 +118,9 @@ function GetList() {
 }
 function ShowAlert(item, minute, alertType) {
     if (alertType == "success") 
-        $('#alerts').append("<div class='alert alert-" + alertType + "'><a class='close' data-dismiss='alert'>×</a> There is <span class='bolder'>" + minute.toString() + "</span> minutes left for the task named <span class='bolder'>" + item.taskTitle + "</span> which needs to be completed on <span class='bolder'>" + item.taskDateString + "</span></div>");
+        $('#alerts').append("<div class='alert alert-" + alertType + "'><a class='close' data-dismiss='alert'>×</a> There is <span class='bolder'>" + minute.toString() + " minutes left</span> for the task named <span class='bolder'>" + item.taskTitle + "</span> which needs to be completed on <span class='bolder'>" + item.taskDateString + "</span> Please complete.</div>");
     else
-        $('#alerts').append("<div class='alert alert-" + alertType + "'><a class='close' data-dismiss='alert'>×</a> There is <span class='bolder'> </span> minutes left for the task named <span class='bolder'>" + item.taskTitle + "</span> which needs to be completed on <span class='bolder'>" + item.taskDateString + "</span></div>");
+        $('#alerts').append("<div class='alert alert-" + alertType + "'><a class='close' data-dismiss='alert'>×</a> The task named not completed <span class='bolder'>" + item.taskTitle + "</span> which needs to be completed on <span class='bolder'>" + item.taskDateString + ".</span> Please complete.</div>");
 }
 function LoadTb() {
     $('#table_todo').dataTable().fnClearTable();
